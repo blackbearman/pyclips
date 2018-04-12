@@ -535,17 +535,17 @@ def _i_convert_fullclass(name, li):
     head4 = INDENT + INDENT + INDENT + "__env = private_environment\n"
     head5 = INDENT + INDENT + INDENT + "__envobject = environment_object\n"
     foot1 = INDENT + INDENT + "return %s\n"  % name
-    return [head1, head2, head3] + map(_i_convert_classline, docs) \
-       + [head4, head5] + map(_i_convert_classline, li1) + [foot1]
+    return [head1, head2, head3] + list(map(_i_convert_classline, docs)) \
+        + [head4, head5] + list(map(_i_convert_classline, li1)) + [foot1]
 
 # convert an entire function, provided as a list of lines
 def _i_convert_fullfunction(name, li):
-    return map(lambda x: _i_convert_line(x, True), li)
+    return list(map(lambda x: _i_convert_line(x, True), li))
 
 # create the list of lines that build inner classes in Environment.__init__
 def _i_create_inner_classes():
     inner = []
-    kclasses = ALL_CLASSES.keys()
+    kclasses = list(ALL_CLASSES.keys())
     kclasses.sort()
     for x in kclasses:
         inner.append(
@@ -559,13 +559,13 @@ def convert_module(filename):
     _i_read_module(f)
     f.close()
     classes = []
-    kclasses = ALL_CLASSES.keys()
+    kclasses = list(ALL_CLASSES.keys())
     kclasses.sort()
     for x in kclasses:
         classes += _i_convert_fullclass(x, ALL_CLASSES[x])
     initclasses = _i_create_inner_classes()
     functions = []
-    kfunctions = ALL_FUNCTIONS.keys()
+    kfunctions = list(ALL_FUNCTIONS.keys())
     kfunctions.sort()
     for x in kfunctions:
         functions += _i_convert_fullfunction(x, ALL_FUNCTIONS[x])
