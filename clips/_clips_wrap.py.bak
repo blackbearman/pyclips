@@ -213,7 +213,7 @@ def _forces(*types):
                 elif type(t) == dict:
                     type_a = type(a)
                     # ...if the type of the argument is taken into account...
-                    if type_a in t:
+                    if t.has_key(type_a):
                         conv = t[type_a]
                         # ...when it is not None, the argument is converted
                         if conv is not None:
@@ -225,7 +225,7 @@ def _forces(*types):
                     #  None as a possible type to convert to another, then
                     #  the argument is converted anyway (ie. None acts as a
                     #  sink that converts any type as a last resort)
-                    elif None in t:
+                    elif t.has_key(None):
                         newargs.append(t[None](a))
                     # ...but when there is no suitable specific conversion
                     #  and None is not given the argument is left as it is
@@ -253,13 +253,13 @@ def _forces_method(*types):
                     newargs.append(a)
                 elif type(t) == dict:
                     type_a = type(a)
-                    if type_a in t:
+                    if t.has_key(type_a):
                         conv = t[type_a]
                         if conv is not None:
                             newargs.append(conv(a))
                         else:
                             newargs.append(a)
-                    elif None in t:
+                    elif t.has_key(None):
                         newargs.append(t[None](a))
                     else:
                         newargs.append(a)

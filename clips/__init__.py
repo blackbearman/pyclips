@@ -31,17 +31,18 @@ for further information and to obtain the full source code.
 
 Please issue 'print clips.license' at the prompt for licensing information.
 """
+from __future__ import absolute_import
 
 
-from _clips_wrap import *
+from ._clips_wrap import *
 from _eclips_wrap import Environment, CurrentEnvironment
-from _license import license
+from ._license import license
 from _version import version, version_string
 
 
 # provide our __dict__ to the _clips_wrap in order to set up stock classes:
 # the name _setParentModuleDict will be removed later
-from _clips_wrap import _setParentModuleDict
+from ._clips_wrap import _setParentModuleDict
 _setParentModuleDict(globals())
 del _setParentModuleDict
 
