@@ -47,7 +47,7 @@ PYCLIPS_VERSION = "%s.%s.%s.%s" % (
 
 
 from glob import glob
-import os, sys, re, tempfile
+import os, sys, re, tempfile, subprocess
 
 
 # remove unwanted patch sets from this list (not recommended)
@@ -767,10 +767,18 @@ if uses_gcc:
 
 
 # apply "optional" patches
-i, o, e = os.popen3("patch --version")
+
+#PIPE = subprocess.PIPE
+#p = subprocess.Popen(cmd, shell=isinstance(cmd, basestring),
+#                     bufsize=bufsize, stdin=PIPE, stdout=PIPE,
+#                     stderr=PIPE, close_fds=True)
+
+z=1
+pipe = subprocess.Popen("patch --version", shell=True, stdout=subprocess.PIPE)
+o = pipe.stdout
 vs = o.read()
 o.close()
-e.close()
+
 if vs:
     print("'patch' utility found, applying selected patchsets...")
     import shutil
