@@ -6,3 +6,6 @@ clipssrc
 build
 cvtenv.py
 .idea/*
+.vagrant
+*.log
+clips/__pycache__

@@ -735,8 +735,7 @@ CFLAGS = [
     '-DPYCLIPS_MAJOR=%s' % PYCLIPS_MAJOR,
     '-DPYCLIPS_MINOR=%s' % PYCLIPS_MINOR,
     '-DPYCLIPS_PATCHLEVEL=%s' % PYCLIPS_PATCHLEVEL,
-    '-DPYCLIPS_INCREMENTAL=%s' % PYCLIPS_INCREMENTAL,
-    '-DWIN_MVC'
+    '-DPYCLIPS_INCREMENTAL=%s' % PYCLIPS_INCREMENTAL
     ]
 
 
@@ -748,6 +747,7 @@ CFLAGS = [
 #  way to determine which compiler is used without having to rewrite all
 #  of distutils
 if sys.platform == 'win32':
+    CFLAGS.append('-DWIN_MVC')
     try:
         find_compiler = sys.argv.index('-c') + 1
     except ValueError:

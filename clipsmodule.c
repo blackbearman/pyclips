@@ -27,8 +27,16 @@
 
 */
 
-
 #include "clipsmodule.h"
+
+#if PY_MAJOR_VERSION >= 3
+    #define staticforward static
+    #define PyInt_FromLong PyLong_FromLong
+    #define PyInt_AsLong PyLong_AsLongLong
+    #define PyInt_Check PyLong_Check
+    #define PyString_FromString PyUnicode_FromString
+    #define PyString_Check PyUnicode_Check
+#endif
 
 
 /* some configuration values that should generally not be changed */
@@ -95,7 +103,7 @@ static PyDictObject *clips_PythonFunctions = NULL;
 #ifdef _MSC_VER
 #define F_INLINE __inline
 #else
-#define F_INLINE
+#define F_INLINE inline
 #endif /* _MSC_VER */
 #endif /* __GNUC__ */
 
@@ -128,7 +136,7 @@ static char _error_clipssys_envnoclear[] = "S03: environment could not be cleare
 static char _error_clipssys_badenv[] = "S04: environment is invalid";
 static char _error_clipssys_curenv[] = "S05: aliasing current environment might corrupt system";
 static char _error_clipssys_maxenv[] = "S06: maximum number of environments reached";
-static char _error_clipssys_cleanup[] = "S07: cannot force cleanup while rules are executing";
+//static char _error_clipssys_cleanup[] = "S07: cannot force cleanup while rules are executing";
 
 /* static char _error_clipsmem_generic[] = "X00: generic memory error"; */ /* NOT USED */
 static char _error_clipsmem_out[] = "X01: out of memory, system may be inconsistent";
@@ -623,7 +631,7 @@ typedef struct {
 #define clips_environment_value(v) (((clips_EnvObject *)(v))->value)
 #define clips_environment_valid(v) (((clips_EnvObject *)(v))->valid)
 #define clips_environment_check(v) \
-    (((v)->ob_type == &clips_EnvType) && clips_environment_valid(v))
+    ((Py_TYPE(v) == &clips_EnvType) && clips_environment_valid(v))
 
 #ifdef USE_NONASSERT_CLIPSGCLOCK
 #define clips_environment_New(p) \
@@ -657,8 +665,7 @@ static void clips_EnvObject_dealloc(PyObject *self) {
 }
 
 static PyTypeObject clips_EnvType = {
-    PyObject_HEAD_INIT(NULL)
-    0,
+    PyVarObject_HEAD_INIT(NULL, 0)
     "environment",
     sizeof(clips_EnvObject),
     0,
@@ -683,7 +690,7 @@ typedef struct {
     void *value;
 } clips_DeftemplObject;
 
-#define clips_deftemplate_check(v) ((v)->ob_type == &clips_DeftemplType)
+#define clips_deftemplate_check(v) (Py_TYPE(v) == &clips_DeftemplType)
 #define clips_deftemplate_value(v) (((clips_DeftemplObject *)(v))->value)
 
 #define clips_deftemplate_New(p) \
@@ -694,8 +701,7 @@ static void clips_DeftemplObject_dealloc(PyObject *self) {
 }
 
 static PyTypeObject clips_DeftemplType = {
-    PyObject_HEAD_INIT(NULL)
-    0,
+    PyVarObject_HEAD_INIT(NULL, 0)
     "deftemplate",
     sizeof(clips_DeftemplObject),
     0,
@@ -726,7 +732,7 @@ typedef struct {
 #endif /* USE_NONASSERT_CLIPSGCLOCK */
 } clips_FactObject;
 
-#define clips_fact_check(v) ((v)->ob_type == &clips_FactType)
+#define clips_fact_check(v) (Py_TYPE(v) == &clips_FactType)
 #define clips_fact_value(v) (((clips_FactObject *)(v))->value)
 #define clips_fact_env(v) (((clips_FactObject *)(v))->creation_env)
 #define clips_fact_readonly(v) (((clips_FactObject *)(v))->readonly)
@@ -979,8 +985,7 @@ static void clips_FactObject_dealloc(PyObject *self) {
 }
 
 static PyTypeObject clips_FactType = {
-    PyObject_HEAD_INIT(NULL)
-    0,
+    PyVarObject_HEAD_INIT(NULL, 0)
     "fact",
     sizeof(clips_FactObject),
     0,
@@ -1006,7 +1011,7 @@ typedef struct {
     void *value;
 } clips_AddressObject;
 
-#define clips_address_check(v) ((v)->ob_type == &clips_AddressType)
+#define clips_address_check(v) (Py_TYPE(v) == &clips_AddressType)
 #define clips_address_value(v) (((clips_AddressObject *)(v))->value)
 #define clips_address_addrtype(v) (((clips_AddressObject *)(v))->ob_addrtype)
 
@@ -1020,8 +1025,7 @@ static void clips_AddressObject_dealloc(PyObject *self) {
 }
 
 static PyTypeObject clips_AddressType = {
-    PyObject_HEAD_INIT(NULL)
-    0,
+    PyVarObject_HEAD_INIT(NULL, 0)
     "address",
     sizeof(clips_AddressObject),
     0,
@@ -1046,7 +1050,7 @@ typedef struct {
     void *value;
 } clips_DeffactsObject;
 
-#define clips_deffacts_check(v) ((v)->ob_type == &clips_DeffactsType)
+#define clips_deffacts_check(v) (Py_TYPE(v) == &clips_DeffactsType)
 #define clips_deffacts_value(v) (((clips_DeffactsObject *)(v))->value)
 
 #define clips_deffacts_New(p) \
@@ -1057,8 +1061,7 @@ static void clips_DeffactsObject_dealloc(PyObject *self) {
 }
 
 static PyTypeObject clips_DeffactsType = {
-    PyObject_HEAD_INIT(NULL)
-    0,
+    PyVarObject_HEAD_INIT(NULL, 0)
     "deffacts",
     sizeof(clips_DeffactsObject),
     0,
@@ -1083,7 +1086,7 @@ typedef struct {
     void *value;
 } clips_DefruleObject;
 
-#define clips_defrule_check(v) ((v)->ob_type == &clips_DeffactsType)
+#define clips_defrule_check(v) (Py_TYPE(v) == &clips_DeffactsType)
 #define clips_defrule_value(v) (((clips_DefruleObject *)(v))->value)
 
 #define clips_defrule_New(p) \
@@ -1094,8 +1097,7 @@ static void clips_DefruleObject_dealloc(PyObject *self) {
 }
 
 static PyTypeObject clips_DefruleType = {
-    PyObject_HEAD_INIT(NULL)
-    0,
+    PyVarObject_HEAD_INIT(NULL, 0)
     "defrule",
     sizeof(clips_DefruleObject),
     0,
@@ -1120,7 +1122,7 @@ typedef struct {
     void *value;
 } clips_ActivationObject;
 
-#define clips_activation_check(v) ((v)->ob_type == &clips_ActivationType)
+#define clips_activation_check(v) (Py_TYPE(v) == &clips_ActivationType)
 #define clips_activation_value(v) (((clips_ActivationObject *)(v))->value)
 
 #define clips_activation_New(p) \
@@ -1131,8 +1133,7 @@ static void clips_ActivationObject_dealloc(PyObject *self) {
 }
 
 static PyTypeObject clips_ActivationType = {
-    PyObject_HEAD_INIT(NULL)
-    0,
+    PyVarObject_HEAD_INIT(NULL, 0)
     "activation",
     sizeof(clips_ActivationObject),
     0,
@@ -1157,7 +1158,7 @@ typedef struct {
     void *value;
 } clips_DefglobalObject;
 
-#define clips_defglobal_check(v) ((v)->ob_type == &clips_DefglobalType)
+#define clips_defglobal_check(v) (Py_TYPE(v) == &clips_DefglobalType)
 #define clips_defglobal_value(v) (((clips_DefglobalObject *)(v))->value)
 
 #define clips_defglobal_New(p) \
@@ -1168,8 +1169,7 @@ static void clips_DefglobalObject_dealloc(PyObject *self) {
 }
 
 static PyTypeObject clips_DefglobalType = {
-    PyObject_HEAD_INIT(NULL)
-    0,
+    PyVarObject_HEAD_INIT(NULL, 0)
     "defglobal",
     sizeof(clips_DefglobalObject),
     0,
@@ -1194,7 +1194,7 @@ typedef struct {
     void *value;
 } clips_DeffunctionObject;
 
-#define clips_deffunction_check(v) ((v)->ob_type == &clips_DeffunctionType)
+#define clips_deffunction_check(v) (Py_TYPE(v) == &clips_DeffunctionType)
 #define clips_deffunction_value(v) (((clips_DeffunctionObject *)(v))->value)
 
 #define clips_deffunction_New(p) \
@@ -1205,8 +1205,7 @@ static void clips_DeffunctionObject_dealloc(PyObject *self) {
 }
 
 static PyTypeObject clips_DeffunctionType = {
-    PyObject_HEAD_INIT(NULL)
-    0,
+    PyVarObject_HEAD_INIT(NULL, 0)
     "deffunction",
     sizeof(clips_DeffunctionObject),
     0,
@@ -1231,7 +1230,7 @@ typedef struct {
     void *value;
 } clips_DefgenericObject;
 
-#define clips_defgeneric_check(v) ((v)->ob_type == &clips_DefgenericType)
+#define clips_defgeneric_check(v) (Py_TYPE(v) == &clips_DefgenericType)
 #define clips_defgeneric_value(v) (((clips_DefgenericObject *)(v))->value)
 
 #define clips_defgeneric_New(p) \
@@ -1242,8 +1241,7 @@ static void clips_DefgenericObject_dealloc(PyObject *self) {
 }
 
 static PyTypeObject clips_DefgenericType = {
-    PyObject_HEAD_INIT(NULL)
-    0,
+    PyVarObject_HEAD_INIT(NULL, 0)
     "defgeneric",
     sizeof(clips_DefgenericObject),
     0,
@@ -1268,7 +1266,7 @@ typedef struct {
     void *value;
 } clips_DefmethodObject;
 
-#define clips_defmethod_check(v) ((v)->ob_type == &clips_DefmethodType)
+#define clips_defmethod_check(v) (Py_TYPE(v) == &clips_DefmethodType)
 #define clips_defmethod_value(v) (((clips_DefmethodObject *)(v))->value)
 
 #define clips_defmethod_New(p) \
@@ -1279,8 +1277,7 @@ static void clips_DefmethodObject_dealloc(PyObject *self) {
 }
 
 static PyTypeObject clips_DefmethodType = {
-    PyObject_HEAD_INIT(NULL)
-    0,
+    PyVarObject_HEAD_INIT(NULL, 0)
     "defmethod",
     sizeof(clips_DefmethodObject),
     0,
@@ -1305,7 +1302,7 @@ typedef struct {
     void *value;
 } clips_DefclassObject;
 
-#define clips_defclass_check(v) ((v)->ob_type == &clips_DefclassType)
+#define clips_defclass_check(v) (Py_TYPE(v) == &clips_DefclassType)
 #define clips_defclass_value(v) (((clips_DefclassObject *)(v))->value)
 
 #define clips_defclass_New(p) \
@@ -1316,8 +1313,7 @@ static void clips_DefclassObject_dealloc(PyObject *self) {
 }
 
 static PyTypeObject clips_DefclassType = {
-    PyObject_HEAD_INIT(NULL)
-    0,
+    PyVarObject_HEAD_INIT(NULL, 0)
     "defclass",
     sizeof(clips_DefclassObject),
     0,
@@ -1344,7 +1340,7 @@ typedef struct {
     void *creation_env;
 } clips_InstanceObject;
 
-#define clips_instance_check(v) ((v)->ob_type == &clips_InstanceType)
+#define clips_instance_check(v) (Py_TYPE(v) == &clips_InstanceType)
 #define clips_instance_value(v) (((clips_InstanceObject *)(v))->value)
 #define clips_instance_env(v) (((clips_InstanceObject *)(v))->creation_env)
 #define clips_instance_verify(v) (!((struct instance *) \
@@ -1381,8 +1377,7 @@ static void clips_InstanceObject_dealloc(PyObject *self) {
 }
 
 static PyTypeObject clips_InstanceType = {
-    PyObject_HEAD_INIT(NULL)
-    0,
+    PyVarObject_HEAD_INIT(NULL, 0)
     "instance",
     sizeof(clips_InstanceObject),
     0,
@@ -1407,7 +1402,7 @@ typedef struct {
     void *value;
 } clips_DefinstancesObject;
 
-#define clips_definstances_check(v) ((v)->ob_type == &clips_DefinstancesType)
+#define clips_definstances_check(v) (Py_TYPE(v) == &clips_DefinstancesType)
 #define clips_definstances_value(v) (((clips_DefinstancesObject *)(v))->value)
 
 #define clips_definstances_New(p) \
@@ -1418,8 +1413,7 @@ static void clips_DefinstancesObject_dealloc(PyObject *self) {
 }
 
 static PyTypeObject clips_DefinstancesType = {
-    PyObject_HEAD_INIT(NULL)
-    0,
+    PyVarObject_HEAD_INIT(NULL, 0)
     "definstances",
     sizeof(clips_DefinstancesObject),
     0,
@@ -1444,7 +1438,7 @@ typedef struct {
     void *value;
 } clips_DefmoduleObject;
 
-#define clips_defmodule_check(v) ((v)->ob_type == &clips_DefmoduleType)
+#define clips_defmodule_check(v) (Py_TYPE(v) == &clips_DefmoduleType)
 #define clips_defmodule_value(v) (((clips_DefmoduleObject *)(v))->value)
 
 #define clips_defmodule_New(p) \
@@ -1455,8 +1449,7 @@ static void clips_DefmoduleObject_dealloc(PyObject *self) {
 }
 
 static PyTypeObject clips_DefmoduleType = {
-    PyObject_HEAD_INIT(NULL)
-    0,
+    PyVarObject_HEAD_INIT(NULL, 0)
     "defmodule",
     sizeof(clips_DefmoduleObject),
     0,
@@ -2342,7 +2335,7 @@ returns: a string containing a module name\n\
 arguments:\n\
   deftemplate (deftemplate) - the deftemplate to inspect";
 static PyObject *g_deftemplateModule(PyObject *self, PyObject *args) {
-    char *module = NULL;
+    const char *module = NULL;
     clips_DeftemplObject *p = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DeftemplType, &p))
@@ -2727,7 +2720,7 @@ returns: a string containing the name\n\
 arguments:\n\
   deftemplate (deftemplate) - the deftemplate object";
 static PyObject *g_getDeftemplateName(PyObject *self, PyObject *args) {
-    char *name = NULL;
+    const char *name = NULL;
     clips_DeftemplObject *p = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DeftemplType, &p))
@@ -2755,7 +2748,7 @@ returns: the requested pretty-print form as a string\n\
 arguments:\n\
   deftemplate (deftemplate) - the deftemplate object";
 static PyObject *g_getDeftemplatePPForm(PyObject *self, PyObject *args) {
-    char *s = NULL;
+    const char *s = NULL;
     clips_DeftemplObject *p = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DeftemplType, &p))
@@ -3656,7 +3649,7 @@ arguments:\n\
   deffacts (deffacts) - the deffacts object to inspect";
 static PyObject *g_deffactsModule(PyObject *self, PyObject *args) {
     clips_DeffactsObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DeffactsType, &p))
         FAIL();
@@ -3747,7 +3740,7 @@ arguments:\n\
   deffacts (deffacts) - the deffacts to inspect";
 static PyObject *g_getDeffactsName(PyObject *self, PyObject *args) {
     clips_DeffactsObject *p = NULL;
-    char *name = NULL;
+    const char *name = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DeffactsType, &p))
         FAIL();
@@ -3775,7 +3768,7 @@ arguments:\n\
   deffacts (deffacts) - the deffacts to inspect";
 static PyObject *g_getDeffactsPPForm(PyObject *self, PyObject *args) {
     clips_DeffactsObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DeffactsType, &p))
         FAIL();
@@ -3960,7 +3953,7 @@ arguments:\n\
   defrule (defrule) - the defrule to inspect";
 static PyObject *g_defruleModule(PyObject *self, PyObject *args) {
     clips_DefruleObject *p = NULL;
-    char *name = NULL;
+    const char *name = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DefruleType, &p))
         FAIL();
@@ -4047,7 +4040,7 @@ arguments:\n\
   defrule (defrule) - the defrule to inspect";
 static PyObject *g_getDefruleName(PyObject *self, PyObject *args) {
     clips_DefruleObject *p = NULL;
-    char *name = NULL;
+    const char *name = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DefruleType, &p))
         FAIL();
@@ -4075,7 +4068,7 @@ arguments:\n\
   defrule (defrule) - the defrule to inspect";
 static PyObject *g_getDefrulePPForm(PyObject *self, PyObject *args) {
     clips_DefruleObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DefruleType, &p))
         FAIL();
@@ -4542,7 +4535,7 @@ arguments:\n\
   activation (activation) - the activation to inspect";
 static PyObject *g_getActivationName(PyObject *self, PyObject *args) {
     clips_ActivationObject *p = NULL;
-    char *name = NULL;
+    const char *name = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_ActivationType, &p))
         FAIL();
@@ -4946,7 +4939,7 @@ arguments:\n\
   defglobal (defglobal) - the defglobal to inspect";
 static PyObject *g_defglobalModule(PyObject *self, PyObject *args) {
     clips_DefglobalObject *p = NULL;
-    char *module = NULL;
+    const char *module = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DefglobalType, &p))
         FAIL();
@@ -5037,7 +5030,7 @@ arguments:\n\
   defglobal (defglobal) - the defglobal to inspect";
 static PyObject *g_getDefglobalName(PyObject *self, PyObject *args) {
     clips_DefglobalObject *p = NULL;
-    char *name = NULL;
+    const char *name = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DefglobalType, &p))
         FAIL();
@@ -5063,7 +5056,7 @@ arguments:\n\
   defglobal (defglobal) - the defglobal to inspect";
 static PyObject *g_getDefglobalPPForm(PyObject *self, PyObject *args) {
     clips_DefglobalObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DefglobalType, &p))
         FAIL();
@@ -5411,7 +5404,7 @@ arguments:\n\
   deffunction (deffunction) - the deffunction to inspect";
 static PyObject *g_deffunctionModule(PyObject *self, PyObject *args) {
     clips_DeffunctionObject *p = NULL;
-    char *module = NULL;
+    const char *module = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DeffunctionType, &p))
         FAIL();
@@ -5502,7 +5495,7 @@ arguments:\n\
   deffunction (deffunction) - the deffunction to inspect";
 static PyObject *g_getDeffunctionName(PyObject *self, PyObject *args) {
     clips_DeffunctionObject *p = NULL;
-    char *name = NULL;
+    const char *name = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DeffunctionType, &p))
         FAIL();
@@ -5530,7 +5523,7 @@ arguments:\n\
   deffunction (deffunction) - the deffunction to inspect";
 static PyObject *g_getDeffunctionPPForm(PyObject *self, PyObject *args) {
     clips_DeffunctionObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DeffunctionType, &p))
         FAIL();
@@ -5736,7 +5729,7 @@ arguments:\n\
   defgeneric (defgeneric) - the defgeneric to inspect";
 static PyObject *g_defgenericModule(PyObject *self, PyObject *args) {
     clips_DefgenericObject *p = NULL;
-    char *module = NULL;
+    const char *module = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DefgenericType, &p))
         FAIL();
@@ -5827,7 +5820,7 @@ arguments:\n\
   defgeneric (defgeneric) - the defgeneric to inspect";
 static PyObject *g_getDefgenericName(PyObject *self, PyObject *args) {
     clips_DefgenericObject *p = NULL;
-    char *name = NULL;
+    const char *name = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DefgenericType, &p))
         FAIL();
@@ -5855,7 +5848,7 @@ arguments:\n\
   defgeneric (defgeneric) - the defgeneric to inspect";
 static PyObject *g_getDefgenericPPForm(PyObject *self, PyObject *args) {
     clips_DefgenericObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DefgenericType, &p))
         FAIL();
@@ -6108,7 +6101,7 @@ arguments:\n\
   defgeneric (defgeneric) - the defgeneric to inspect";
 static PyObject *g_getDefmethodPPForm(PyObject *self, PyObject *args) {
     clips_DefgenericObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
     int i = 0;
 
     if(!PyArg_ParseTuple(args, "iO!", &i, &clips_DefgenericType, &p))
@@ -6538,7 +6531,7 @@ returns: a string containing a module name\n\
 arguments:\n\
   defclass (defclass) - the defclass to inspect";
 static PyObject *g_defclassModule(PyObject *self, PyObject *args) {
-    char *module = NULL;
+    const char *module = NULL;
     clips_DefclassObject *p = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DefclassType, &p))
@@ -6659,7 +6652,7 @@ returns: a string containing the name\n\
 arguments:\n\
   defclass (defclass) - the defclass object";
 static PyObject *g_getDefclassName(PyObject *self, PyObject *args) {
-    char *name = NULL;
+    const char *name = NULL;
     clips_DefclassObject *p = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DefclassType, &p))
@@ -6687,7 +6680,7 @@ returns: the requested pretty-print form as a string\n\
 arguments:\n\
   defclass (defclass) - the defclass object";
 static PyObject *g_getDefclassPPForm(PyObject *self, PyObject *args) {
-    char *s = NULL;
+    const char *s = NULL;
     clips_DefclassObject *p = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DefclassType, &p))
@@ -7639,7 +7632,7 @@ arguments:\n\
   instance (instance) - the instance to inspect";
 static PyObject *g_getInstanceName(PyObject *self, PyObject *args) {
     clips_InstanceObject *p = NULL;
-    char *name = NULL;
+    const char *name = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_InstanceType, &p))
         FAIL();
@@ -8210,7 +8203,7 @@ arguments:\n\
   index (int) - index of handler";
 static PyObject *g_getDefmessageHandlerName(PyObject *self, PyObject *args) {
     clips_DefclassObject *p = NULL;
-    char *name = NULL;
+    const char *name = NULL;
     int i = 0;
 
     if(!PyArg_ParseTuple(args, "O!i",  &clips_DefclassType, &p, &i))
@@ -8244,7 +8237,7 @@ arguments:\n\
   index (int) - index of handler";
 static PyObject *g_getDefmessageHandlerPPForm(PyObject *self, PyObject *args) {
     clips_DefclassObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
     int i = 0;
 
     if(!PyArg_ParseTuple(args, "O!i",  &clips_DefclassType, &p, &i))
@@ -8278,7 +8271,7 @@ arguments:\n\
   index (int) - index of handler";
 static PyObject *g_getDefmessageHandlerType(PyObject *self, PyObject *args) {
     clips_DefclassObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
     int i = 0;
 
     if(!PyArg_ParseTuple(args, "O!i",  &clips_DefclassType, &p, &i))
@@ -8540,7 +8533,7 @@ arguments:\n\
   definstances (definstances) - the definstances to inspect";
 static PyObject *g_definstancesModule(PyObject *self, PyObject *args) {
     clips_DefinstancesObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DefinstancesType, &p))
         FAIL();
@@ -8624,7 +8617,7 @@ arguments:\n\
   definstances (definstances) - the definstances to inspect";
 static PyObject *g_getDefinstancesName(PyObject *self, PyObject *args) {
     clips_DefinstancesObject *p = NULL;
-    char *name = NULL;
+    const char *name = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DefinstancesType, &p))
         FAIL();
@@ -8652,7 +8645,7 @@ arguments:\n\
   definstances (definstances) - the definstances to inspect";
 static PyObject *g_getDefinstancesPPForm(PyObject *self, PyObject *args) {
     clips_DefinstancesObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DefinstancesType, &p))
         FAIL();
@@ -8877,7 +8870,7 @@ arguments:\n\
   defmodule (defmodule) - the defmodule to inspect";
 static PyObject *g_getDefmoduleName(PyObject *self, PyObject *args) {
     clips_DefmoduleObject *p = NULL;
-    char *name = NULL;
+    const char *name = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DefmoduleType, &p))
         FAIL();
@@ -8901,7 +8894,7 @@ arguments:\n\
   defmodule (defmodule) - the defmodule to inspect";
 static PyObject *g_getDefmodulePPForm(PyObject *self, PyObject *args) {
     clips_DefmoduleObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
 
     if(!PyArg_ParseTuple(args, "O!", &clips_DefmoduleType, &p))
         FAIL();
@@ -9617,7 +9610,7 @@ arguments:\n\
 static PyObject *e_deftemplateModule(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
-    char *s = NULL;
+    const char *s = NULL;
     clips_DeftemplObject *p = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
@@ -10070,7 +10063,7 @@ arguments:\n\
 static PyObject *e_getDeftemplateName(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
-    char *name = NULL;
+    const char *name = NULL;
     clips_DeftemplObject *p = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
@@ -10104,7 +10097,7 @@ arguments:\n\
 static PyObject *e_getDeftemplatePPForm(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
-    char *s = NULL;
+    const char *s = NULL;
     clips_DeftemplObject *p = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
@@ -11158,7 +11151,7 @@ static PyObject *e_deffactsModule(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_DeffactsObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
                          &clips_EnvType, &pyenv, &clips_DeffactsType, &p))
@@ -11265,7 +11258,7 @@ static PyObject *e_getDeffactsName(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_DeffactsObject *p = NULL;
-    char *name = NULL;
+    const char *name = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
                          &clips_EnvType, &pyenv, &clips_DeffactsType, &p))
@@ -11298,7 +11291,7 @@ static PyObject *e_getDeffactsPPForm(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_DeffactsObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
                          &clips_EnvType, &pyenv, &clips_DeffactsType, &p))
@@ -11516,7 +11509,7 @@ static PyObject *e_defruleModule(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_DefruleObject *p = NULL;
-    char *name = NULL;
+    const char *name = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
                          &clips_EnvType, &pyenv, &clips_DefruleType, &p))
@@ -11619,7 +11612,7 @@ static PyObject *e_getDefruleName(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_DefruleObject *p = NULL;
-    char *name = NULL;
+    const char *name = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
                          &clips_EnvType, &pyenv, &clips_DefruleType, &p))
@@ -11652,7 +11645,7 @@ static PyObject *e_getDefrulePPForm(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_DefruleObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
                          &clips_EnvType, &pyenv, &clips_DefruleType, &p))
@@ -12218,7 +12211,7 @@ static PyObject *e_getActivationName(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_ActivationObject *p = NULL;
-    char *name = NULL;
+    const char *name = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
                          &clips_EnvType, &pyenv, &clips_ActivationType, &p))
@@ -12671,7 +12664,7 @@ static PyObject *e_defglobalModule(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_DefglobalObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
                          &clips_EnvType, &pyenv, &clips_DefglobalType, &p))
@@ -12778,7 +12771,7 @@ static PyObject *e_getDefglobalName(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_DefglobalObject *p = NULL;
-    char *name = NULL;
+    const char *name = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
                          &clips_EnvType, &pyenv, &clips_DefglobalType, &p))
@@ -12811,7 +12804,7 @@ static PyObject *e_getDefglobalPPForm(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_DefglobalObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
                          &clips_EnvType, &pyenv, &clips_DefglobalType, &p))
@@ -13225,7 +13218,7 @@ static PyObject *e_deffunctionModule(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_DeffunctionObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
                          &clips_EnvType, &pyenv, &clips_DeffunctionType, &p))
@@ -13333,7 +13326,7 @@ static PyObject *e_getDeffunctionName(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_DeffunctionObject *p = NULL;
-    char *name = NULL;
+    const char *name = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
                          &clips_EnvType, &pyenv, &clips_DeffunctionType, &p))
@@ -13366,7 +13359,7 @@ static PyObject *e_getDeffunctionPPForm(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_DeffunctionObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
                          &clips_EnvType, &pyenv, &clips_DeffunctionType, &p))
@@ -13615,7 +13608,7 @@ static PyObject *e_defgenericModule(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_DefgenericObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
                          &clips_EnvType, &pyenv, &clips_DefgenericType, &p))
@@ -13723,7 +13716,7 @@ static PyObject *e_getDefgenericName(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_DefgenericObject *p = NULL;
-    char *name = NULL;
+    const char *name = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
                          &clips_EnvType, &pyenv, &clips_DefgenericType, &p))
@@ -13756,7 +13749,7 @@ static PyObject *e_getDefgenericPPForm(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_DefgenericObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
                          &clips_EnvType, &pyenv, &clips_DefgenericType, &p))
@@ -14060,7 +14053,7 @@ static PyObject *e_getDefmethodPPForm(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_DefgenericObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
     int i = 0;
 
     if(!PyArg_ParseTuple(args, "O!iO!",
@@ -14577,7 +14570,7 @@ arguments:\n\
 static PyObject *e_defclassModule(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
-    char *s = NULL;
+    const char *s = NULL;
     clips_DefclassObject *p = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
@@ -14721,7 +14714,7 @@ arguments:\n\
 static PyObject *e_getDefclassName(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
-    char *name = NULL;
+    const char *name = NULL;
     clips_DefclassObject *p = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
@@ -14754,7 +14747,7 @@ arguments:\n\
 static PyObject *e_getDefclassPPForm(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
-    char *s = NULL;
+    const char *s = NULL;
     clips_DefclassObject *p = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
@@ -15909,7 +15902,7 @@ static PyObject *e_getInstanceName(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_InstanceObject *p = NULL;
-    char *name = NULL;
+    const char *name = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
                          &clips_EnvType, &pyenv, &clips_InstanceType, &p))
@@ -16576,7 +16569,7 @@ static PyObject *e_getDefmessageHandlerName(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_DefclassObject *p = NULL;
-    char *name = NULL;
+    const char *name = NULL;
     unsigned int i = 0;
 
     if(!PyArg_ParseTuple(args, "O!O!i",
@@ -16616,7 +16609,7 @@ static PyObject *e_getDefmessageHandlerPPForm(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_DefclassObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
     unsigned int i = 0;
 
     if(!PyArg_ParseTuple(args, "O!O!i",
@@ -16656,7 +16649,7 @@ static PyObject *e_getDefmessageHandlerType(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_DefclassObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
     unsigned int i = 0;
 
     if(!PyArg_ParseTuple(args, "O!O!i",
@@ -16971,7 +16964,7 @@ static PyObject *e_definstancesModule(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_DefinstancesObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
                          &clips_EnvType, &pyenv,
@@ -17080,7 +17073,7 @@ static PyObject *e_getDefinstancesName(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_DefinstancesObject *p = NULL;
-    char *name = NULL;
+    const char *name = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
                          &clips_EnvType, &pyenv,
@@ -17114,7 +17107,7 @@ static PyObject *e_getDefinstancesPPForm(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_DefinstancesObject *p = NULL;
-    char *name = NULL;
+    const char *name = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
                          &clips_EnvType, &pyenv,
@@ -17387,7 +17380,7 @@ static PyObject *e_getDefmoduleName(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_DefmoduleObject *p = NULL;
-    char *name = NULL;
+    const char *name = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
                          &clips_EnvType, &pyenv, &clips_DefmoduleType, &p))
@@ -17419,7 +17412,7 @@ static PyObject *e_getDefmodulePPForm(PyObject *self, PyObject *args) {
     clips_EnvObject *pyenv = NULL;
     void *env = NULL;
     clips_DefmoduleObject *p = NULL;
-    char *s = NULL;
+    const char *s = NULL;
 
     if(!PyArg_ParseTuple(args, "O!O!",
                          &clips_EnvType, &pyenv, &clips_DefmoduleType, &p))
@@ -17723,10 +17716,10 @@ UNIMPLEMENT(allocateEnvironmentData, v_allocateEnvironmentData)
 
 
 /* prototypes for router handling functions - see below */
-int clips_env_queryFunction(void *, char *);
-int clips_env_printFunction(void *, char *, char *);
-int clips_env_getcFunction(void *, char *);
-int clips_env_ungetcFunction(void *, int, char *);
+int clips_env_queryFunction(void *, const char *);
+int clips_env_printFunction(void *, const char *, const char *);
+int clips_env_getcFunction(void *, const char *);
+int clips_env_ungetcFunction(void *, int, const char *);
 int clips_env_exitFunction(void *, int);
 
 /* createEnvironment */
@@ -17937,7 +17930,7 @@ typedef struct {
     BOOL py_readonly;   /* this flag is only used by Python interface */
 } buffer_Object;
 
-#define buffer_Check(v) ((v)->ob_type == &buffer_Type)
+#define buffer_Check(v) (Py_TYPE(v) == &buffer_Type)
 #define buffer_Name(v) (((buffer_Object *)(v))->name)
 #define buffer_Buffer(v) (((buffer_Object *)(v))->buffer)
 #define buffer_Readptr(v) (((buffer_Object *)(v))->readptr)
@@ -18089,8 +18082,7 @@ static int buffer_ungetchar(buffer_Object *o, int c) {
 
 /* the Python buffer Type */
 static PyTypeObject buffer_Type = {
-    PyObject_HEAD_INIT(NULL)
-    0,
+    PyVarObject_HEAD_INIT(NULL, 0)
     "streambuffer",
     sizeof(buffer_Object),
     0,
@@ -18108,7 +18100,7 @@ static PyTypeObject buffer_Type = {
 
 
 /* stream dictionary handlers */
-static BOOL bufdict_Add(char *name, BOOL readonly) {
+static BOOL bufdict_Add(const char *name, BOOL readonly) {
     buffer_Object *o = NULL;
 
     o = buffer_create(name, readonly);
@@ -18120,14 +18112,14 @@ static BOOL bufdict_Add(char *name, BOOL readonly) {
     }
 }
 
-static buffer_Object *bufdict_Get(char *name) {
+static buffer_Object *bufdict_Get(const char *name) {
     PyObject *o = PyDict_GetItemString((PyObject *)clips_Streams, name);
     if(o != NULL && buffer_Check(o))
         return (buffer_Object *)o;
     else return NULL;
 }
 
-static BOOL bufdict_Remove(char *name) {
+static BOOL bufdict_Remove(const char *name) {
     PyObject *o = NULL;
 
     if(!(o = PyDict_GetItemString((PyObject *)clips_Streams, name)))
@@ -18143,11 +18135,11 @@ static BOOL bufdict_Remove(char *name) {
 }
 
 /* clips router helpers (page 161..163 of apg) */
-int clips_queryFunction(char *logicalName) {
+int clips_queryFunction(const char *logicalName) {
     return bufdict_Get(logicalName) != NULL ? TRUE : FALSE;
 }
 
-int clips_printFunction(char *logicalName, char *str) {
+int clips_printFunction(const char *logicalName, const char *str) {
     buffer_Object *o = bufdict_Get(logicalName);
 
     if(o != NULL) {
@@ -18157,7 +18149,7 @@ int clips_printFunction(char *logicalName, char *str) {
     } else return FALSE;
 }
 
-int clips_getcFunction(char *logicalName) {
+int clips_getcFunction(const char *logicalName) {
     buffer_Object *o = bufdict_Get(logicalName);
     int c = 0;
 
@@ -18169,7 +18161,7 @@ int clips_getcFunction(char *logicalName) {
     } else return EOF;
 }
 
-int clips_ungetcFunction(int ch, char *logicalName) {
+int clips_ungetcFunction(int ch, const char *logicalName) {
     buffer_Object *o = bufdict_Get(logicalName);
     int c = 0;
 
@@ -18187,11 +18179,11 @@ int clips_exitFunction(int exitCode) {
 
 
 /* clips router helpers [environmental] (page 161..163 of apg) */
-int clips_env_queryFunction(void *env, char *logicalName) {
+int clips_env_queryFunction(void *env, const char *logicalName) {
     return bufdict_Get(logicalName) != NULL ? TRUE : FALSE;
 }
 
-int clips_env_printFunction(void *env, char *logicalName, char *str) {
+int clips_env_printFunction(void *env, const char *logicalName, const char *str) {
     buffer_Object *o = bufdict_Get(logicalName);
 
     if(o != NULL) {
@@ -18201,7 +18193,7 @@ int clips_env_printFunction(void *env, char *logicalName, char *str) {
     } else return FALSE;
 }
 
-int clips_env_getcFunction(void *env, char *logicalName) {
+int clips_env_getcFunction(void *env, const char *logicalName) {
     buffer_Object *o = bufdict_Get(logicalName);
     int c = 0;
 
@@ -18213,7 +18205,7 @@ int clips_env_getcFunction(void *env, char *logicalName) {
     } else return EOF;
 }
 
-int clips_env_ungetcFunction(void *env, int ch, char *logicalName) {
+int clips_env_ungetcFunction(void *env, int ch, const char *logicalName) {
     buffer_Object *o = bufdict_Get(logicalName);
     int c = 0;
 
@@ -18497,13 +18489,13 @@ END_FAIL
 
 
 /* functions that print an error to CLIPS */
-static void InvalidFunctionError(void *env, char *name) {
+static void InvalidFunctionError(void *env, const char *name) {
     PrintErrorID(env, "PYTHONFN", 1, TRUE);
     EnvPrintRouter(env, WERROR, "External function ");
     EnvPrintRouter(env, WERROR, name);
     EnvPrintRouter(env, WERROR, " not found.\n");
 }
-static void FunctionExceptionError(void *env, char *name) {
+static void FunctionExceptionError(void *env, const char *name) {
     PrintErrorID(env, "PYTHONXC", 1, TRUE);
     EnvPrintRouter(env, WERROR, "Call to function ");
     EnvPrintRouter(env, WERROR, name);
@@ -18526,7 +18518,7 @@ static void FunctionExceptionError(void *env, char *name) {
     SetpType(_v, SYMBOL); SetpValue(_v, ECLIPS_FALSE_SYMBOL(_e)); return; \
     }  while(0)
 void EnvPythonExternalCall(void *env, DATA_OBJECT_PTR retval) {
-    char *funcname = NULL;
+    const char *funcname = NULL;
     int argcnt = 0, i = 0;
     DATA_OBJECT arg;
     PyObject *to_call = NULL, *result = NULL, *o = NULL;
@@ -18711,8 +18703,7 @@ static void guard_dealloc(PyObject *o) {
 
 /* the Python internal guard Type */
 static PyTypeObject guard_Type = {
-    PyObject_HEAD_INIT(NULL)
-    0,
+    PyVarObject_HEAD_INIT(NULL, 0)
     "__PyCLIPS_$iGuardType__",  /* the name is intentionally unusable */
     sizeof(guard_Object),
     0,
@@ -18731,7 +18722,7 @@ static PyTypeObject guard_Type = {
 /* also prepare an object living in module namespace with an unusable name */
 #define PREPARE_DEALLOC_ENV() guard_Object *_ig = NULL;
 #define INSTALL_DEALLOC_ENV(_m) do { \
-        guard_Type.ob_type = &PyType_Type; \
+        Py_TYPE(&guard_Type) = &PyType_Type; \
         _ig = PyObject_New(guard_Object, &guard_Type); \
         PyModule_AddObject(_m, "__PyCLIPS_$iGuardObject__", (PyObject *)_ig); \
     } while(0)
@@ -19371,11 +19362,33 @@ static PyMethodDef g_methods[] = {
     {NULL, NULL, 0, NULL},
 };
 
+#if PY_MAJOR_VERSION >= 3
+  #define MOD_ERROR_VAL NULL
+  #define MOD_SUCCESS_VAL(val) val
+  #define MOD_INIT(name) PyMODINIT_FUNC PyInit_##name(void)
+#else
+  #define MOD_ERROR_VAL
+  #define MOD_SUCCESS_VAL(val)
+  #define MOD_INIT(name) PyMODINIT_FUNC init##name(void)
+#endif
+
+#if PY_MAJOR_VERSION >= 3
+    static struct PyModuleDef moduledef = {
+        PyModuleDef_HEAD_INIT,
+        "_clips",     /* m_name */
+        clips__doc__,  /* m_doc */
+        -1,                  /* m_size */
+        g_methods,    /* m_methods */
+        NULL,                /* m_reload */
+        NULL,                /* m_traverse */
+        NULL,                /* m_clear */
+        NULL,                /* m_free */
+    };
+#endif
 
 /* initialization function */
 PYFUNC
-PyMODINIT_FUNC
-init_clips(void) {
+MOD_INIT(_clips) {
     PyObject *m = NULL, *d = NULL;
 #ifdef USE_NONASSERT_CLIPSGCLOCK
     void *e = NULL;
@@ -19384,7 +19397,13 @@ init_clips(void) {
     PREPARE_DEALLOC_ENV();
 
     /* give the module a method map */
-    m = Py_InitModule3("_clips", g_methods, clips__doc__);
+    #if PY_MAJOR_VERSION >= 3
+        m = PyModule_Create(&moduledef);
+    #else
+        m = Py_InitModule3("_clips", g_methods, clips__doc__);
+    #endif
+    if (m == NULL)
+        return MOD_ERROR_VAL;
     d = PyModule_GetDict(m);
 
     /* possibly install the environment deallocator */
@@ -19403,19 +19422,19 @@ init_clips(void) {
     PyDict_SetItemString(d, "ClipsMemoryError", PyExc_ClipsMemoryError);
 
     /* setup ob_type for types defined here */
-    clips_EnvType.ob_type = &PyType_Type;
-    clips_DeftemplType.ob_type = &PyType_Type;
-    clips_FactType.ob_type = &PyType_Type;
-    clips_DefmoduleType.ob_type = &PyType_Type;
-    clips_DeffactsType.ob_type = &PyType_Type;
-    clips_ActivationType.ob_type = &PyType_Type;
-    clips_DefglobalType.ob_type = &PyType_Type;
-    clips_DeffunctionType.ob_type = &PyType_Type;
-    clips_DefgenericType.ob_type = &PyType_Type;
-    clips_DefmethodType.ob_type = &PyType_Type;
-    clips_DefclassType.ob_type = &PyType_Type;
+    Py_TYPE(&clips_EnvType) = &PyType_Type;
+    Py_TYPE(&clips_DeftemplType) = &PyType_Type;
+    Py_TYPE(&clips_FactType) = &PyType_Type;
+    Py_TYPE(&clips_DefmoduleType) = &PyType_Type;
+    Py_TYPE(&clips_DeffactsType) = &PyType_Type;
+    Py_TYPE(&clips_ActivationType) = &PyType_Type;
+    Py_TYPE(&clips_DefglobalType) = &PyType_Type;
+    Py_TYPE(&clips_DeffunctionType) = &PyType_Type;
+    Py_TYPE(&clips_DefgenericType) = &PyType_Type;
+    Py_TYPE(&clips_DefmethodType) = &PyType_Type;
+    Py_TYPE(&clips_DefclassType) = &PyType_Type;
 
-    buffer_Type.ob_type = &PyType_Type;
+    Py_TYPE(&buffer_Type) = &PyType_Type;
 
     /* initialize the router system */
     clips_Streams = (PyDictObject *)PyDict_New();
@@ -19509,7 +19528,35 @@ init_clips(void) {
               clips_exitFunction);
     ActivateRouter("python");
 
+    return MOD_SUCCESS_VAL(m);
 }
 
+
+int
+main(int argc, char *argv[])
+{
+    wchar_t *program = Py_DecodeLocale(argv[0], NULL);
+    if (program == NULL) {
+        fprintf(stderr, "Fatal error: cannot decode argv[0]\n");
+        exit(1);
+    }
+
+    /* Add a built-in module, before Py_Initialize */
+    PyImport_AppendInittab("_clips", PyInit__clips);
+
+    /* Pass argv[0] to the Python interpreter */
+    Py_SetProgramName(program);
+
+    /* Initialize the Python interpreter.  Required. */
+    Py_Initialize();
+
+    /* Optionally import the module; alternatively,
+       import can be deferred until the embedded script
+       imports it. */
+    PyImport_ImportModule("_clips");
+
+    PyMem_RawFree(program);
+    return 0;
+}
 
 /* end */

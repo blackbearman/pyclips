@@ -5,8 +5,8 @@
 import unittest
 import glob
 
-execfile('test_00.py')
-for x in glob.glob("test_[a-z]*.py"): execfile(x)
+exec(open('test_00.py').read())
+for x in glob.glob("test_[a-z]*.py"): exec(open(x).read())
 def is_test_class(x):
     try: return issubclass(eval(x), ctestcase)
     except: return False
