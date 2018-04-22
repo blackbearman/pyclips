@@ -862,7 +862,7 @@ setup(name="pyclips",
       url="http://pyclips.sourceforge.net",
       packages=['clips'],
       ext_modules=[
-          Extension('clips._clips',
+          Extension('_clips',
                     main_clipssrc + all_clipssrc,
                     extra_compile_args=CFLAGS,
                     include_dirs=[ClipsLIB_dir]),

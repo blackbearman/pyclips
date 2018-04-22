@@ -36,6 +36,7 @@
     #define PyInt_Check PyLong_Check
     #define PyString_FromString PyUnicode_FromString
     #define PyString_Check PyUnicode_Check
+    #define PyString_AsString PyUnicode_AsUTF8
 #endif
 
 
@@ -795,7 +796,7 @@ static unsigned long clips_NotAssertedFacts = 0;
 static BOOL clips_GCLocked = FALSE;
 LOPTR_HASH_TABLE(clips_StrayFacts) = { 0 };
 
-F_INLINE void clips_lock_gc(clips_EnvObject *pyenv) {
+static F_INLINE void clips_lock_gc(clips_EnvObject *pyenv) {
     if(pyenv) {
         if(!pyenv->clips_GCLocked && pyenv->clips_NotAssertedFacts > 0) {
             EnvIncrementGCLocks(clips_environment_value(pyenv));
@@ -808,7 +809,7 @@ F_INLINE void clips_lock_gc(clips_EnvObject *pyenv) {
         }
     }
 }
-F_INLINE void clips_unlock_gc(clips_EnvObject *pyenv) {
+static F_INLINE void clips_unlock_gc(clips_EnvObject *pyenv) {
     if(pyenv) {
         if(pyenv->clips_GCLocked && pyenv->clips_NotAssertedFacts == 0) {
             pyenv->clips_GCLocked = FALSE;
@@ -821,14 +822,14 @@ F_INLINE void clips_unlock_gc(clips_EnvObject *pyenv) {
         }
     }
 }
-F_INLINE BOOL add_FactObject_lock(clips_EnvObject *pyenv) {
+static F_INLINE BOOL add_FactObject_lock(clips_EnvObject *pyenv) {
     if(pyenv)
         pyenv->clips_NotAssertedFacts++;
     else
         clips_NotAssertedFacts++;
     return TRUE;
 }
-F_INLINE BOOL remove_FactObject_lock(clips_EnvObject *pyenv) {
+static F_INLINE BOOL remove_FactObject_lock(clips_EnvObject *pyenv) {
     if(pyenv) {
         if(pyenv->clips_NotAssertedFacts > 0) {
             pyenv->clips_NotAssertedFacts--;
@@ -842,7 +843,7 @@ F_INLINE BOOL remove_FactObject_lock(clips_EnvObject *pyenv) {
     }
     return FALSE;
 }
-F_INLINE BOOL reset_FactObject_lock(clips_EnvObject *pyenv) {
+static F_INLINE BOOL reset_FactObject_lock(clips_EnvObject *pyenv) {
     if(pyenv) {
         if(pyenv->clips_NotAssertedFacts > 0) {
             pyenv->clips_NotAssertedFacts = 0;
