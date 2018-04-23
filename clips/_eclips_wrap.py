@@ -73,7 +73,7 @@ CONSERVATION_MODE = _c.CONSERVATION_MODE
 
 
 # import adequate symbols from _clips_wrap
-from _clips_wrap import Nil, Integer, Float, String, Symbol, InstanceName, \
+from ._clips_wrap import Nil, Integer, Float, String, Symbol, InstanceName, \
                         Multifield, _cl2py, _py2cl, _py2clsyntax, \
                         ClipsIntegerType, ClipsFloatType, ClipsStringType, \
                         ClipsSymbolType, ClipsInstanceNameType, \
@@ -468,7 +468,7 @@ class Environment(object):
                 """return list of MessageHandler constructs of this Class"""
                 o = _c.env_getDefmessageHandlerList(self.__env, self.__defclass, False)
                 li, rv = Multifield(self.__envobject._cl2py(o)), []
-                l = len(li) / 3
+                l = len(li) // 3
                 for x in range(0, l):
                     rv.append(Multifield([li[x * 3], li[x * 3 + 1], li[x * 3 + 2]]))
                 return Multifield(rv)
@@ -476,7 +476,7 @@ class Environment(object):
                 """return list of MessageHandlers of this Class and superclasses"""
                 o = _c.env_getDefmessageHandlerList(self.__env, self.__defclass, True)
                 li, rv = Multifield(self.__envobject._cl2py(o)), []
-                l = len(li) / 3
+                l = len(li) // 3
                 for x in range(0, l):
                     rv.append(Multifield([li[x * 3], li[x * 3 + 1], li[x * 3 + 2]]))
                 return Multifield(rv)
@@ -912,7 +912,7 @@ class Environment(object):
                 """return the list of Method indices for this Generic"""
                 o = _c.env_getDefmethodList(self.__env, self.__defgeneric)
                 li, mli = Multifield(self.__envobject._cl2py(o)), Multifield([])
-                l = len(li) / 2
+                l = len(li) // 2
                 for x in range(0, l):
                     mli.append(li[2 * x + 1])
                 return mli
@@ -2546,7 +2546,7 @@ class Environment(object):
         """return list of MessageHandler constructs"""
         o = _c.env_getDefmessageHandlerList(self.__env)
         li, rv = Multifield(self._cl2py(o)), []
-        l = len(li) / 3
+        l = len(li) // 3
         for x in range(0, l):
             rv.append(Multifield([li[x * 3], li[x * 3 + 1], li[x * 3 + 2]]))
         return Multifield(rv)
@@ -2554,7 +2554,7 @@ class Environment(object):
         """return the list of all Methods"""
         o = self._cl2py(_c.env_getDefmethodList(self.__env))
         li = Multifield([])
-        l = len(o) / 2
+        l = len(o) // 2
         for x in range(l):
             li.append(Multifield([o[2 * x], o[2 * x + 1]]))
         return li

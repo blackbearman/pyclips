@@ -80,8 +80,8 @@ class ctc_Submitted(ctestcase):
             e = self.envdict[x]
             e.Clear()
             e.Reset()
-            S1 = unicode("S1")
-            S2 = unicode("S2")
+            S1 = str("S1")
+            S2 = str("S2")
             t1 = e.BuildTemplate(
                 "t1", """
                 (slot S1
@@ -101,7 +101,7 @@ class ctc_Submitted(ctestcase):
             e = self.envdict[x]
             e.Clear()
             e.Reset()
-            S0 = unicode("S0")
+            S0 = str("S0")
             t1 = e.BuildTemplate(
                 "t1", "(slot S0)")
             f = t1.BuildFact()

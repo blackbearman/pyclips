@@ -30,7 +30,7 @@ for further information and to obtain the full source code.
 
 Please issue 'print clips.license' at the prompt for licensing information.
 """
-from __future__ import absolute_import
+#from __future__ import absolute_import
 
 import _clips
 
@@ -41,10 +41,10 @@ from ._version import version, version_string
 
 # provide our __dict__ to the _clips_wrap in order to set up stock classes:
 # the name _setParentModuleDict will be removed later
-from ._clips_wrap import _setParentModuleDict
+# from ._clips_wrap import _setParentModuleDict
 
-_setParentModuleDict(globals())
-del _setParentModuleDict
+#_setParentModuleDict(globals())
+#del _setParentModuleDict
 
 # define the __all__ list so that the module can avoid useless names: in
 #  fact all useful names that this part of the module begin with a letter

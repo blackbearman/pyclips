@@ -6,20 +6,30 @@ import unittest
 import glob
 
 exec(open('test_00.py').read())
-for x in glob.glob("test_[a-z]*.py"): exec(open(x).read())
+for x in glob.glob("test_[a-z]*.py"):
+    exec(open(x).read())
+
+
 def is_test_class(x):
-    try: return issubclass(eval(x), ctestcase)
-    except: return False
+    try:
+        return issubclass(eval(x), ctestcase)
+    except:
+        return False
+
+
 def is_test_function(x):
-    try: return x.startswith('ctf_')
-    except: return False
+    try:
+        return x.startswith('ctf_')
+    except:
+        return False
+
 
 suite = unittest.TestSuite()
+
 for x in filter(is_test_class, dir()):
     for y in filter(is_test_function, dir(eval(x))):
         suite.addTest(eval("%s('%s')" % (x, y)))
 
 unittest.TextTestRunner(verbosity=2).run(suite)
-
 
 # end.

@@ -268,7 +268,7 @@ class ctc_Class(ctestcase):
             rm1 = i.Slots['ts2']
             self.assertEqual(rs1, s1)
             self.assertEqual(rm1, m1)
-            self.assertEqual(len(i.Slots.keys()), 2)
+            self.assertEqual(len(list(i.Slots.keys())), 2)
             d1.append(i.PPForm())
         self.assertEqual(d1[0], d1[-1])
 

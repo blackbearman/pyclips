@@ -1,6 +1,11 @@
 # test_print.py
 
-import sys, re, StringIO
+import sys, re
+
+try:
+    from StringIO import StringIO
+except ImportError:
+    import io as StringIO
 
 """revision $Id: test_print.py 247 2005-02-23 00:28:47Z Franz $
 TESTS:

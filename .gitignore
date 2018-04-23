@@ -9,3 +9,7 @@ cvtenv.py
 .vagrant
 *.log
 clips/__pycache__
+testsuite/*.out
+testsuite/*.dat
+testsuite/*.bdat
+testsuite/*.clp

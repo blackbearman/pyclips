@@ -303,7 +303,7 @@ CONSERVATION_MODE = _c.CONSERVATION_MODE
 
 
 # import adequate symbols from _clips_wrap
-from _clips_wrap import Nil, Integer, Float, String, Symbol, InstanceName, \\
+from ._clips_wrap import Nil, Integer, Float, String, Symbol, InstanceName, \\
                         Multifield, _cl2py, _py2cl, _py2clsyntax, \\
                         ClipsIntegerType, ClipsFloatType, ClipsStringType, \\
                         ClipsSymbolType, ClipsInstanceNameType, \\
