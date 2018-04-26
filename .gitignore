@@ -13,3 +13,4 @@ testsuite/*.out
 testsuite/*.dat
 testsuite/*.bdat
 testsuite/*.clp
+*.csv

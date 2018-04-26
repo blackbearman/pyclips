@@ -635,10 +635,10 @@ class Environment(object):
                         raise _c.ClipsError("M03: cannot pickle fact slots")
                 if _c.isFact(o):
                     self.__fact = o
-                elif '_Fact__fact' in dir(o) and _c.isFact(o.__fact):
-                    self.__fact = o.__fact
                 elif _c.isDeftemplate(o):
                     self.__fact = _c.env_createFact(self.__env, o)
+                elif '_Fact__fact' in dir(o) and _c.isFact(o.__fact):
+                    self.__fact = o.__fact
                 elif '_Template__deftemplate' in dir(o) and \
                    _c.isDeftemplate(o._Template__deftemplate):
                     self.__fact = _c.env_createFact(self.__env, o._Template__deftemplate)

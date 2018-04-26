@@ -1264,10 +1264,10 @@ class Fact(object):
         #  body since the fact has to be created at lower level
         if _c.isFact(o):
             self.__fact = o
-        elif '_Fact__fact' in dir(o) and _c.isFact(o.__fact):
-            self.__fact = o.__fact
         elif _c.isDeftemplate(o):
             self.__fact = _c.createFact(o)
+        elif '_Fact__fact' in dir(o) and _c.isFact(o.__fact):
+            self.__fact = o.__fact
         elif '_Template__deftemplate' in dir(o) and \
            _c.isDeftemplate(o._Template__deftemplate):
             self.__fact = _c.createFact(o._Template__deftemplate)
